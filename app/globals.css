@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@font-face {
+  font-family: 'Sprintura';
+  src: url('https://fonts.googleapis.com/css2?family=Sprintura&display=swap');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+  font-weight: 400;
+}
+
+@theme inline {
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(0 0% 0%);
+  --color-primary: hsl(80 100% 60%);
+  --color-primary-foreground: hsl(0 0% 0%);
+  --color-secondary: hsl(0 0% 98%);
+  --color-secondary-foreground: hsl(0 0% 0%);
+  --color-accent: hsl(80 100% 60%);
+  --color-accent-foreground: hsl(0 0% 0%);
+  --color-muted: hsl(0 0% 95%);
+  --color-muted-foreground: hsl(0 0% 45%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(0 0% 0%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(0 0% 0%);
+  --color-border: hsl(0 0% 90%);
+  --color-input: hsl(0 0% 95%);
+  --color-ring: hsl(80 100% 60%);
+  --color-destructive: hsl(0 85% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --radius: 0.625rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme inline {
+    --color-background: hsl(0 0% 8%);
+    --color-foreground: hsl(0 0% 98%);
+    --color-primary: hsl(80 100% 60%);
+    --color-primary-foreground: hsl(0 0% 0%);
+    --color-secondary: hsl(0 0% 20%);
+    --color-secondary-foreground: hsl(0 0% 98%);
+    --color-accent: hsl(80 100% 60%);
+    --color-accent-foreground: hsl(0 0% 0%);
+    --color-muted: hsl(0 0% 25%);
+    --color-muted-foreground: hsl(0 0% 70%);
+    --color-card: hsl(0 0% 12%);
+    --color-card-foreground: hsl(0 0% 98%);
+    --color-popover: hsl(0 0% 12%);
+    --color-popover-foreground: hsl(0 0% 98%);
+    --color-border: hsl(0 0% 20%);
+    --color-input: hsl(0 0% 18%);
+    --color-ring: hsl(80 100% 60%);
+    --color-destructive: hsl(0 85% 60%);
+    --color-destructive-foreground: hsl(0 0% 100%);
+  }
+}
+
+@layer base {
+  html {
+    @apply bg-background text-foreground;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-30px);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes text-shimmer {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-text-shimmer {
+    animation: text-shimmer 2s ease-in-out infinite;
+  }
+}
