@@ -14,7 +14,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([])
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000])
   const [sortBy, setSortBy] = useState('newest')
 
@@ -184,7 +184,7 @@ export default function ProductsPage() {
                     </p>
                     <button
                       onClick={() => {
-                        setSelectedCategory(null)
+                        setSelectedCategory(undefined)
                         setPriceRange([0, 1000])
                       }}
                       className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-opacity-90 transition-colors"

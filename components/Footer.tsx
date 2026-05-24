@@ -30,21 +30,6 @@ export default function Footer() {
                   All Products
                 </Link>
               </li>
-              <li>
-                <Link href="/category/street-decks" className="hover:text-primary transition-colors">
-                  Street Decks
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/longboards" className="hover:text-primary transition-colors">
-                  Longboards
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/electric-skateboards" className="hover:text-primary transition-colors">
-                  E-Boards
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -53,22 +38,22 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-lg">Help</h4>
             <ul className="space-y-2 text-sm text-background/80">
               <li>
-                <Link href="#" className="hover:text-primary transition-colors">
+                <Link href="/contact" className="hover:text-primary transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-primary transition-colors">
+                <Link href="/faq" className="hover:text-primary transition-colors">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-primary transition-colors">
+                <Link href="/shipping" className="hover:text-primary transition-colors">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-primary transition-colors">
+                <Link href="/returns" className="hover:text-primary transition-colors">
                   Returns
                 </Link>
               </li>

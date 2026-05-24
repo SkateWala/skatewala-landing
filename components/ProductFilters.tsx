@@ -12,7 +12,7 @@ interface Category {
 interface ProductFiltersProps {
   categories: Category[]
   selectedCategory?: string
-  onCategoryChange: (slug: string | null) => void
+  onCategoryChange: (slug: string | undefined) => void
   priceRange: [number, number]
   onPriceChange: (range: [number, number]) => void
 }
@@ -62,7 +62,7 @@ export default function ProductFilters({
                 name="category"
                 value=""
                 checked={!selectedCategory}
-                onChange={() => onCategoryChange(null)}
+                onChange={() => onCategoryChange(undefined)}
                 className="w-4 h-4 text-primary cursor-pointer"
               />
               <span className="text-sm text-foreground group-hover:text-primary transition-colors">
