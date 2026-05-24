@@ -1,91 +1,88 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import InfoBoxes from '@/components/InfoBoxes'
 import FAQ from '@/components/FAQ'
-import { notFound } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
   const [category, setCategory] = useState<any>(null)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState('newest')
+  const router = useRouter()
 
+  // ✅ createClient() called once outside useEffect
   const supabase = createClient()
 
-  useEffect(() => {
-    const fetchCategoryAndProducts = async () => {
-      setLoading(true)
+  const fetchCategoryAndProducts = useCallback(async () => {
+    setLoading(true)
 
-      // Fetch category
-      const { data: categoryData } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('slug', params.slug)
-        .single()
+    const { data: categoryData, error: catError } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', params.slug)
+      .single()
 
-      if (!categoryData) {
-        notFound()
-      }
-
-      setCategory(categoryData)
-
-      // Fetch products in category
-      let query = supabase
-        .from('products')
-        .select(
-          `id, name, slug, price, discount_price, badge, created_at,
-           product_images(image_url, alt_text, is_primary)`
-        )
-        .eq('category_id', categoryData.id)
-
-      // Apply sorting
-      if (sortBy === 'newest') {
-        query = query.order('created_at', { ascending: false })
-      } else if (sortBy === 'price-low') {
-        query = query.order('discount_price', { ascending: true, nullsFirst: false })
-      } else if (sortBy === 'price-high') {
-        query = query.order('price', { ascending: false })
-      }
-
-      const { data: productsData } = await query
-
-      const productsWithImages = (productsData || []).map((product) => {
-        const primaryImage = product.product_images?.find(
-          (img: any) => img.is_primary
-        ) || product.product_images?.[0]
-        return {
-          ...product,
-          image: primaryImage,
-        }
-      })
-
-      setProducts(productsWithImages)
-      setLoading(false)
+    // ✅ notFound() can't be called inside useEffect — redirect instead
+    if (catError || !categoryData) {
+      router.push('/404')
+      return
     }
 
-    fetchCategoryAndProducts()
-  }, [params.slug, sortBy])
+    setCategory(categoryData)
 
-  if (!category && !loading) {
-    notFound()
-  }
+    let query = supabase
+      .from('products')
+      .select(
+        `id, name, slug, price, discount_price, badge, created_at,
+         product_images(image_url, alt_text, is_primary)`
+      )
+      .eq('category_id', categoryData.id)
+
+    if (sortBy === 'newest') {
+      query = query.order('created_at', { ascending: false })
+    } else if (sortBy === 'price-low') {
+      // ✅ sort by discount_price but fall back to price for nulls
+      query = query.order('discount_price', { ascending: true, nullsFirst: false })
+    } else if (sortBy === 'price-high') {
+      query = query.order('price', { ascending: false })
+    }
+
+    const { data: productsData } = await query
+
+    const productsWithImages = (productsData || []).map((product) => {
+      const primaryImage =
+        product.product_images?.find((img: any) => img.is_primary) ||
+        product.product_images?.[0]
+      return { ...product, image: primaryImage }
+    })
+
+    setProducts(productsWithImages)
+    setLoading(false)
+  }, [params.slug, sortBy]) // ✅ proper deps
+
+  useEffect(() => {
+    fetchCategoryAndProducts()
+  }, [fetchCategoryAndProducts])
 
   return (
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        {/* Page Header */}
         <section className="bg-secondary/50 border-b border-border py-8 px-4">
           <div className="container mx-auto">
             <a href="/" className="text-primary hover:underline text-sm mb-4 block">
               ← Back to Home
             </a>
-            {category && (
+            {/* ✅ Show skeleton while loading instead of nothing */}
+            {loading ? (
+              <div className="h-10 w-48 bg-secondary animate-pulse rounded-lg" />
+            ) : category ? (
               <>
                 <h1 className="text-4xl font-heading font-bold text-foreground mb-2">
                   {category.name}
@@ -94,25 +91,19 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   <p className="text-muted-foreground">{category.description}</p>
                 )}
               </>
-            )}
+            ) : null}
           </div>
         </section>
 
-        {/* Products */}
         <section className="py-12 px-4">
           <div className="container mx-auto">
-            {/* Toolbar */}
-            {products.length > 0 && (
+            {!loading && products.length > 0 && (
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
                 <p className="text-sm text-muted-foreground">
-                  Showing {products.length} products
+                  Showing {products.length} product{products.length !== 1 ? 's' : ''}
                 </p>
-
                 <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="sort"
-                    className="text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="sort" className="text-sm font-medium text-foreground">
                     Sort by:
                   </label>
                   <select
@@ -129,7 +120,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               </div>
             )}
 
-            {/* Products Grid */}
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
@@ -172,13 +162,8 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
           </div>
         </section>
 
-        {/* Info Boxes */}
         <InfoBoxes />
-
-        {/* FAQ */}
         <FAQ />
-
-        {/* Footer */}
         <Footer />
       </main>
     </>

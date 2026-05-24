@@ -7,35 +7,42 @@ import InfoBoxes from '@/components/InfoBoxes'
 import FAQ from '@/components/FAQ'
 import { ArrowRight } from 'lucide-react'
 
+// ✅ Map category slugs to local public images as fallback
+const CATEGORY_IMAGE_MAP: Record<string, string> = {
+  skating: '/skating.jpeg',
+}
+
 export default async function Home() {
   const supabase = await createClient()
 
   // Fetch categories
-  const { data: categories } = await supabase
+  const { data: categories, error: catError } = await supabase
     .from('categories')
     .select('id, name, slug, description, image_url')
+    .order('name', { ascending: true })
     .limit(8)
 
-  // Fetch featured products (best sellers)
-  const { data: featuredProducts } = await supabase
+  console.log('categories data:', categories)
+  console.log('categories error:', catError)
+
+  const { data: featuredProducts, error: prodError } = await supabase
     .from('products')
     .select(
       `id, name, slug, price, discount_price, badge,
        categories(id, name, slug),
        product_images(image_url, alt_text, is_primary)`
     )
-    .eq('badge', 'Best Seller')
     .limit(4)
+
+  console.log('products data:', featuredProducts)
+  console.log('products error:', prodError)
 
   // Get primary image for each product
   const productsWithImages = (featuredProducts || []).map((product) => {
-    const primaryImage = product.product_images?.find(
-      (img: any) => img.is_primary
-    ) || product.product_images?.[0]
-    return {
-      ...product,
-      image: primaryImage,
-    }
+    const primaryImage =
+      product.product_images?.find((img: any) => img.is_primary) ||
+      product.product_images?.[0]
+    return { ...product, image: primaryImage }
   })
 
   return (
@@ -44,10 +51,12 @@ export default async function Home() {
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative h-screen flex items-center justify-center px-4 bg-gradient-to-br from-background via-secondary/20 to-background overflow-hidden">
-          {/* Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+            <div
+              className="absolute bottom-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"
+              style={{ animationDelay: '2s' }}
+            />
           </div>
 
           <div className="container mx-auto relative z-10 text-center">
@@ -65,13 +74,16 @@ export default async function Home() {
                 </span>
               </h1>
 
-              <p className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <p
+                className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-slide-up"
+                style={{ animationDelay: '0.2s' }}
+              >
                 Premium skateboards, longboards, and gear for riders who demand excellence
               </p>
 
               <div className="pt-4 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-                <a
-                  href="#shop"
+                
+                  <a href="#shop"
                   className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
                 >
                   Explore Products
@@ -88,24 +100,35 @@ export default async function Home() {
         {/* Shop Section */}
         <section id="shop" className="py-20 px-4">
           <div className="container mx-auto">
+
             {/* Categories Slider */}
             <div className="mb-20">
               <div className="mb-8">
                 <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-2 animate-fade-in">
                   Browse by Category
                 </h2>
-                <p className="text-lg text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <p
+                  className="text-lg text-muted-foreground animate-fade-in"
+                  style={{ animationDelay: '0.1s' }}
+                >
                   Find exactly what you&apos;re looking for
                 </p>
               </div>
+
               {categories && categories.length > 0 ? (
                 <CategorySlider
-                  categories={categories.map((cat: any) => ({
+                  categories={categories.map((cat) => ({
                     id: cat.id,
                     name: cat.name,
                     slug: cat.slug,
-                    imageUrl: cat.image_url,
                     description: cat.description,
+                    // ✅ Use image_url from DB if it exists,
+                    //    otherwise fall back to local public image by slug,
+                    //    otherwise undefined
+                    imageUrl:
+                      cat.image_url ||
+                      CATEGORY_IMAGE_MAP[cat.slug] ||
+                      undefined,
                   }))}
                 />
               ) : (
@@ -122,12 +145,15 @@ export default async function Home() {
                   <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-2 animate-fade-in">
                     Featured Products
                   </h2>
-                  <p className="text-lg text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                  <p
+                    className="text-lg text-muted-foreground animate-fade-in"
+                    style={{ animationDelay: '0.1s' }}
+                  >
                     Our best sellers and most popular items
                   </p>
                 </div>
-                <a
-                  href="/products"
+                
+                  <a href="/products"
                   className="hidden md:flex items-center gap-2 text-primary hover:text-primary/80 font-bold transition-colors"
                 >
                   View All
@@ -135,8 +161,7 @@ export default async function Home() {
                 </a>
               </div>
 
-              {/* Products Grid */}
-              {productsWithImages && productsWithImages.length > 0 ? (
+              {productsWithImages.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {productsWithImages.map((product, index) => (
                     <div
@@ -174,8 +199,8 @@ export default async function Home() {
               )}
 
               <div className="text-center pt-8 md:hidden">
-                <a
-                  href="/products"
+                
+                  <a href="/products"
                   className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all"
                 >
                   View All Products
@@ -186,10 +211,10 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* FAQ */}
+        
         <FAQ />
 
-        {/* Footer */}
+      
         <Footer />
       </main>
     </>
