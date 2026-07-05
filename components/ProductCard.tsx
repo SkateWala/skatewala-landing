@@ -70,11 +70,11 @@ export default function ProductCard({
           <div className="mt-auto pt-3 border-t border-border">
             <div className="flex items-baseline gap-2">
               <span className="text-lg font-bold text-primary">
-                ${discountPrice ? discountPrice.toFixed(2) : price.toFixed(2)}
+                ₹{discountPrice ? discountPrice.toFixed(2) : price.toFixed(2)}
               </span>
               {discountPrice && (
                 <span className="text-sm text-muted-foreground line-through">
-                  ${price.toFixed(2)}
+                  ₹{price.toFixed(2)}
                 </span>
               )}
             </div>

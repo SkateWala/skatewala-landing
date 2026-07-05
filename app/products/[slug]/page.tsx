@@ -195,7 +195,7 @@ console.log('error:', error)
                     {product.stock > 0 ? (
                       <p className="text-base text-green-600 font-semibold flex items-center gap-2">
                         <span className="inline-block w-2 h-2 bg-green-600 rounded-full animate-pulse" />
-                        In Stock ({product.stock} available)
+                        In Stock (Get it delivered within 2 hours)
                       </p>
                     ) : (
                       <p className="text-base text-red-600 font-semibold">Out of Stock</p>
@@ -213,7 +213,18 @@ console.log('error:', error)
                 )}
 
                 <div className="space-y-4 pt-4">
-                  <a
+                  {/* <a
+                    href={`https://wa.me/?text=${whatsappMessage}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-primary text-primary-foreground py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-3 hover:shadow-xl hover:scale-105 transition-all duration-200 text-lg"
+                  >
+                    <MessageCircle className="w-6 h-6" />
+                    Order on WhatsApp
+                  </a> */}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <a
                     href={`https://wa.me/?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -222,12 +233,6 @@ console.log('error:', error)
                     <MessageCircle className="w-6 h-6" />
                     Order on WhatsApp
                   </a>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="border-2 border-primary text-primary py-3 px-4 rounded-xl font-semibold hover:bg-primary/10 transition-all duration-200 flex items-center justify-center gap-2">
-                      <Heart className="w-5 h-5" />
-                      <span className="hidden sm:inline">Save</span>
-                    </button>
                     <button className="border-2 border-border text-foreground py-3 px-4 rounded-xl font-semibold hover:bg-secondary transition-all duration-200 flex items-center justify-center gap-2">
                       <Share2 className="w-5 h-5" />
                       <span className="hidden sm:inline">Share</span>
@@ -272,8 +277,8 @@ console.log('error:', error)
           </div>
         </section>
 
-        <InfoBoxes />
-        <FAQ />
+        {/* <InfoBoxes />
+        <FAQ /> */}
         <Footer />
       </main>
     </>

@@ -47,9 +47,9 @@ export default function ProductsPage() {
       }
 
       // Apply price filter
-      query = query
-        .gte('discount_price', priceRange[0])
-        .lte('price', priceRange[1])
+      // query = query
+      //   .gte('discount_price', priceRange[0])
+      //   .lte('price', priceRange[1])
 
       // Apply sorting
       if (sortBy === 'newest') {
@@ -103,13 +103,7 @@ export default function ProductsPage() {
           <div className="container mx-auto">
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Sidebar */}
-              <ProductFilters
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                priceRange={priceRange}
-                onPriceChange={setPriceRange}
-              />
+              
 
               {/* Products Grid */}
               <div className="flex-1">
@@ -199,10 +193,10 @@ export default function ProductsPage() {
         </section>
 
         {/* Info Boxes */}
-        <InfoBoxes />
+        {/* <InfoBoxes /> */}
 
         {/* FAQ */}
-        <FAQ />
+        {/* <FAQ /> */}
 
         {/* Footer */}
         <Footer />
